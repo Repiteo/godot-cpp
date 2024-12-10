@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  print_string.hpp                                                      */
+/*  variant_internal.cpp                                                  */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                             GODOT ENGINE                               */
@@ -28,46 +28,16 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef GODOT_PRINT_STRING_HPP
-#define GODOT_PRINT_STRING_HPP
-
-#include <godot_cpp/variant/utility_functions.hpp>
+#include <godot_cpp/variant/variant_internal.hpp>
 
 namespace godot {
-inline void print_error(const Variant &p_variant) {
-	UtilityFunctions::printerr(p_variant);
-}
 
-inline void print_line(const Variant &p_variant) {
-	UtilityFunctions::print(p_variant);
-}
+GDExtensionVariantGetInternalPtrFunc VariantInternal::get_internal_func[Variant::VARIANT_MAX]{};
 
-inline void print_line_rich(const Variant &p_variant) {
-	UtilityFunctions::print_rich(p_variant);
+void VariantInternal::init_bindings() {
+	for (int i = 1; i < Variant::VARIANT_MAX; i++) {
+		get_internal_func[i] = internal::gdextension_interface_variant_get_ptr_internal_getter((GDExtensionVariantType)i);
+	}
 }
-
-template <typename... Args>
-void print_error(const Variant &p_variant, Args... p_args) {
-	UtilityFunctions::printerr(p_variant, p_args...);
-}
-
-template <typename... Args>
-void print_line(const Variant &p_variant, Args... p_args) {
-	UtilityFunctions::print(p_variant, p_args...);
-}
-
-template <typename... Args>
-void print_line_rich(const Variant &p_variant, Args... p_args) {
-	UtilityFunctions::print_rich(p_variant, p_args...);
-}
-
-template <typename... Args>
-void print_verbose(const Variant &p_variant, Args... p_args) {
-	UtilityFunctions::print_verbose(p_variant, p_args...);
-}
-
-bool is_print_verbose_enabled();
 
 } // namespace godot
-
-#endif // GODOT_PRINT_STRING_HPP
